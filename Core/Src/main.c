@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdbool.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,23 +57,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-#include <stdbool.h>
-bool tx_cplt = false;
-bool rx_cplt = false;
 
-void HAL_SPI_TxCpltCallback(SPI_HandleTypeDef * hspi)
-{
-	tx_cplt = true;
-  // TX Done .. Do Something ...
-//  HAL_SPI_Receive_IT(&hspi1, rx_buffer, sizeof(rx_buffer));
-//	  HAL_UART_Transmit(&hlpuart1, "tx cplt\n", 8, 1000);
-}
-
-void HAL_SPI_RxCpltCallback(SPI_HandleTypeDef * hspi)
-{
-	rx_cplt = true;
-//  HAL_UART_Transmit(&hlpuart1, rx_buffer, sizeof(rx_buffer), 1000);
-}
 /* USER CODE END 0 */
 
 /**
@@ -108,18 +92,7 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&hlpuart1, "dpcu\n", 5, 1000);
-
-//  HAL_SPI_TransmitReceive(&hspi1, tx_buffer, rx_buffer, 4, 1000);
-
-//  while(!tx_cplt) {}
-
-//  HAL_UART_Transmit(&hlpuart1, "txcplt\n", 7, 1000);
-
-//  while(!rx_cplt) {}
-
-//  HAL_UART_Transmit(&hlpuart1, "rxcplt\n", 7, 1000);
-//  HAL_UART_Transmit(&hlpuart1, rx_buffer, sizeof(rx_buffer), 1000);
+  HAL_UART_Transmit(&hlpuart1, (uint8_t*)"dpcu\n", 5, 1000);
 
   /* USER CODE END 2 */
 
@@ -127,30 +100,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    // HAL_UART_Transmit(&hlpuart1, tx_buffer, 4, 1000);
-    // HAL_UART_Transmit(&hlpuart1, "\n", 1, 1000);
-
-    // if(HAL_SPI_Transmit(&hspi1, tx_buffer, 4, 1000) != HAL_OK){
-    //   HAL_UART_Transmit(&hlpuart1, "tfail\n", 6, 1000);
-    // }
-    // HAL_Delay(100);
-    // if(HAL_SPI_Receive(&hspi1, rx_buffer, 4, 1000) != HAL_OK){
-    //   HAL_UART_Transmit(&hlpuart1, "rfail\n", 6, 1000);
-    // }
-    // HAL_Delay(100);
-
-    // HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
-    // HAL_UART_Transmit(&hlpuart1, "\n", 1, 1000);
-    // HAL_Delay(500);
-
     if (HAL_SPI_Transmit(&hspi1, tx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
     {
-      HAL_UART_Transmit(&hlpuart1, "ping\n", 5, 1000);
-//      HAL_Delay(100);
+      HAL_UART_Transmit(&hlpuart1, (uint8_t*)"ping\n", 5, 1000);
       if (HAL_SPI_Receive(&hspi1, rx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
       {
-    	  HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
-        HAL_UART_Transmit(&hlpuart1, "\n", 1, 1000);
+    	HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
+        HAL_UART_Transmit(&hlpuart1, (uint8_t*)"\n", 1, 1000);
         HAL_Delay(500);
       }
     }

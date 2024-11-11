@@ -27,25 +27,25 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  0000601c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0000f9b1  00000000  00000000  0000604c  2**0
+ 12 .debug_info   0000f944  00000000  00000000  0000604c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 000023f2  00000000  00000000  000159fd  2**0
+ 13 .debug_abbrev 000023de  00000000  00000000  00015990  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 00000c48  00000000  00000000  00017df0  2**3
+ 14 .debug_aranges 00000c38  00000000  00000000  00017d70  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_rnglists 0000096f  00000000  00000000  00018a38  2**0
+ 15 .debug_rnglists 00000963  00000000  00000000  000189a8  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00024cfc  00000000  00000000  000193a7  2**0
+ 16 .debug_macro  00024cfc  00000000  00000000  0001930b  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000f767  00000000  00000000  0003e0a3  2**0
+ 17 .debug_line   0000f9dd  00000000  00000000  0003e007  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000e8136  00000000  00000000  0004d80a  2**0
+ 18 .debug_str    000e8126  00000000  00000000  0004d9e4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  00135940  2**0
+ 19 .comment      00000043  00000000  00000000  00135b0a  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00003164  00000000  00000000  00135984  2**2
+ 20 .debug_frame  00003114  00000000  00000000  00135b50  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000055  00000000  00000000  00138ae8  2**0
+ 21 .debug_line_str 00000055  00000000  00000000  00138c64  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -480,17 +480,17 @@ int main(void)
   MX_SPI1_Init();
  80005d0:	f000 f896 	bl	8000700 <MX_SPI1_Init>
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&hlpuart1, "dpcu\n", 5, 1000);
+  HAL_UART_Transmit(&hlpuart1, (uint8_t*)"dpcu\n", 5, 1000);
  80005d4:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
  80005d8:	2205      	movs	r2, #5
  80005da:	4919      	ldr	r1, [pc, #100]	@ (8000640 <main+0x84>)
  80005dc:	4819      	ldr	r0, [pc, #100]	@ (8000644 <main+0x88>)
  80005de:	f002 fed1 	bl	8003384 <HAL_UART_Transmit>
 
-    // HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
-    // HAL_UART_Transmit(&hlpuart1, "\n", 1, 1000);
-    // HAL_Delay(500);
-
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
     if (HAL_SPI_Transmit(&hspi1, tx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
  80005e2:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
  80005e6:	2204      	movs	r2, #4
@@ -501,13 +501,12 @@ int main(void)
  80005f2:	2b00      	cmp	r3, #0
  80005f4:	d1f5      	bne.n	80005e2 <main+0x26>
     {
-      HAL_UART_Transmit(&hlpuart1, "ping\n", 5, 1000);
+      HAL_UART_Transmit(&hlpuart1, (uint8_t*)"ping\n", 5, 1000);
  80005f6:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
  80005fa:	2205      	movs	r2, #5
  80005fc:	4914      	ldr	r1, [pc, #80]	@ (8000650 <main+0x94>)
  80005fe:	4811      	ldr	r0, [pc, #68]	@ (8000644 <main+0x88>)
  8000600:	f002 fec0 	bl	8003384 <HAL_UART_Transmit>
-//      HAL_Delay(100);
       if (HAL_SPI_Receive(&hspi1, rx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
  8000604:	f04f 33ff 	mov.w	r3, #4294967295	@ 0xffffffff
  8000608:	2204      	movs	r2, #4
@@ -518,13 +517,13 @@ int main(void)
  8000614:	2b00      	cmp	r3, #0
  8000616:	d1e4      	bne.n	80005e2 <main+0x26>
       {
-    	  HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
+    	HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
  8000618:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
  800061c:	2204      	movs	r2, #4
  800061e:	490d      	ldr	r1, [pc, #52]	@ (8000654 <main+0x98>)
  8000620:	4808      	ldr	r0, [pc, #32]	@ (8000644 <main+0x88>)
  8000622:	f002 feaf 	bl	8003384 <HAL_UART_Transmit>
-        HAL_UART_Transmit(&hlpuart1, "\n", 1, 1000);
+        HAL_UART_Transmit(&hlpuart1, (uint8_t*)"\n", 1, 1000);
  8000626:	f44f 737a 	mov.w	r3, #1000	@ 0x3e8
  800062a:	2201      	movs	r2, #1
  800062c:	490a      	ldr	r1, [pc, #40]	@ (8000658 <main+0x9c>)
