@@ -97,8 +97,9 @@ int main(void)
   MX_SPI1_Init();
   MX_DAC1_Init();
   /* USER CODE BEGIN 2 */
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_UART_Transmit(&hlpuart1, (uint8_t*)"dpcu\n", 5, 1000);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+  uint16_t dac_value=0;
 
   /* USER CODE END 2 */
 
@@ -106,35 +107,13 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	if(!is_signal && rand() < 1000) {
-		is_signal = true;
-	}
 	HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, dac_value);
-	if(dac_value < 4095) {
-		if(is_signal){
-			dac_value++;
-		} else if (dac_value > 2047) {
-			dac_value = 0;
-		}
+	if (dac_value < 4095) {
+		dac_value++;
 	} else {
 		dac_value = 0;
-		is_signal = false;
 	}
-	if(rand() < 1000) {
-	  HAL_GPIO_TogglePin(veto_interrupt_GPIO_Port, veto_interrupt_Pin);
-	  HAL_Delay(10);
-	  HAL_GPIO_TogglePin(veto_interrupt_GPIO_Port, veto_interrupt_Pin);
-	}
-	if (HAL_SPI_Transmit(&hspi1, tx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
-	{
-	  HAL_UART_Transmit(&hlpuart1, (uint8_t*)"ping\n", 5, 1000);
-	  if (HAL_SPI_Receive(&hspi1, rx_buffer, 4, HAL_MAX_DELAY) == HAL_OK)
-	  {
-		HAL_UART_Transmit(&hlpuart1, rx_buffer, 4, 1000);
-		HAL_UART_Transmit(&hlpuart1, (uint8_t*)"\n", 1, 1000);
-		HAL_Delay(500);
-	  }
-	}
+	HAL_Delay(1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
