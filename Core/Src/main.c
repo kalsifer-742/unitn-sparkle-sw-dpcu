@@ -21,6 +21,7 @@
 #include "dac.h"
 #include "usart.h"
 #include "spi.h"
+#include "tim.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -48,9 +49,9 @@
 
 /* USER CODE BEGIN PV */
 uint16_t dac_value = 0;
-bool is_signal = false;
-uint8_t tx_buffer[] = "ping";
-uint8_t rx_buffer[] = "NULL";
+uint16_t start_time = 0;
+uint16_t elapsed_time = 0;
+bool acs_sim = false;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,7 +62,11 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim == &htim6) {
+		acs_sim = true;
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -96,11 +101,11 @@ int main(void)
   MX_LPUART1_UART_Init();
   MX_SPI1_Init();
   MX_DAC1_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Transmit(&hlpuart1, (uint8_t*)"dpcu\n", 5, 1000);
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-  uint16_t dac_value=0;
-
+	HAL_UART_Transmit(&hlpuart1, (uint8_t*)"dpcu\n", 5, 1000);
+	HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+	HAL_TIM_Base_Start_IT(&htim6);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,7 +118,21 @@ int main(void)
 	} else {
 		dac_value = 0;
 	}
-	HAL_Delay(1);
+
+	if(acs_sim) {
+		if(elapsed_time == 0) {
+			start_time = __HAL_TIM_GET_COUNTER(&htim6);
+		}
+
+		HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, SET);
+
+		elapsed_time = __HAL_TIM_GET_COUNTER(&htim6) - start_time;
+		if(elapsed_time > 8500) {
+			elapsed_time = 0;
+			HAL_GPIO_WritePin(GPIOA, GPIO_PIN_10, RESET);
+			acs_sim = false;
+		}
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
