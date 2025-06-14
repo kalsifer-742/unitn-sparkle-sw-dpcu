@@ -1,4 +1,5 @@
 > [!NOTE]
-> This is not the actual code of the data processing unit.
+> This is not the actual code of the DPCU.
 > 
-> The dpcu microcontroller was used to test the functionality of the daq unit.
+> The DPCU microcontroller was used to test the functionality of the DAQ unit.
+> This is because the DAQ needed to be ready before starting to code the DPCU.
